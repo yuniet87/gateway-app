@@ -5,6 +5,7 @@ import EditComponent from '../components/gateway/Edit.vue';
 import CreateComponent from '../components/gateway/Create.vue';
 import DevicesComponent from '../components/device/Devices.vue';
 import CreateDeviceComponent from '../components/device/Create.vue';
+import EditDeviceComponent from '../components/device/Edit.vue';
 
 Vue.use(VueRouter);
 
@@ -18,6 +19,11 @@ const routes = [
     path: '/devices/create',
     name: 'CreateDevice',
     component: CreateDeviceComponent,
+  },
+  {
+    path: '/devices/edit/:id',
+    name: 'EditDevice',
+    component: EditDeviceComponent,
   },
   // {
   //   path: '/about',

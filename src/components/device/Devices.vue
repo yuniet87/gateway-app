@@ -21,8 +21,9 @@
         <tbody>
           <tr v-for="device in devices" :key="device._id">
             <td>{{ device.vendor }}</td>
-            <td>{{ device.createdDate }}</td>
-            <td>{{ device.isOnline }}</td>
+            <td>{{ device.createdDate.substr(0, 10) }}</td>
+            <td v-if="device.isOnline">Online</td>
+            <td v-else>Offline</td>
             <td>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group" style="margin-bottom: 20px;">
@@ -70,8 +71,7 @@ export default {
     deleteDevice(id) {
       axios
         .delete(`${server.baseURL}/device/delete?deviceID=${id}`)
-        .then((data) => {
-          console.log(data);
+        .then(() => {
           window.location.reload();
         });
     },

@@ -24,7 +24,11 @@
             <td>{{ gateway.serialNumber }}</td>
             <td>{{ gateway.hrName }}</td>
             <td>{{ gateway.ipAddress }}</td>
-            <td>{{ gateway.devicesIDs }}</td>
+            <td>
+              <div v-for="item in gateway.devicesIDs" :key="item">
+                {{ item.vendor }}
+              </div>
+            </td>
             <td>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group" style="margin-bottom: 20px;">
@@ -72,8 +76,7 @@ export default {
     deleteGateway(id) {
       axios
         .delete(`${server.baseURL}/gateway/delete?gatewayID=${id}`)
-        .then((data) => {
-          console.log(data);
+        .then(() => {
           window.location.reload();
         });
     },

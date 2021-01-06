@@ -1,29 +1,23 @@
 <template>
   <div>
-    <v-snackbar
-      v-model="snackbar.value"
-      color="red"
-      rounded="pill"
-      right
-      absolute
-      top
-    >
-      {{ snackbar.text }}
-      <v-btn color="white" text @click="snackbar.value = false">
-        Close
-      </v-btn>
-    </v-snackbar>
+    <h4 class="text-center mt-20">
+      <small>
+        <button class="btn btn-success" v-on:click="navigate()">
+          View All Devices
+        </button>
+      </small>
+    </h4>
     <div class="col-md-12 form-wrapper">
-      <h2>Create Device</h2>
+      <h2>Edit Device</h2>
       <v-container fill-height fluid>
         <v-col align="center" justify="center">
-          <form id="create-post-form" @submit.prevent="createDevice">
+          <form id="create-post-form" @submit.prevent="editDevice">
             <div class="form-group col-md-4">
               <label for="title"> Vendor </label>
               <input
                 type="text"
                 id="vendor"
-                v-model="vendor"
+                v-model="device.vendor"
                 name="title"
                 class="form-control"
                 placeholder="Enter device vendor"
@@ -55,19 +49,19 @@
             <div class="form-group col-md-4">
               <label for="title"> Status </label>
               <v-checkbox
-                v-model="checkboxStatus.value"
-                v-if="checkboxStatus.value"
+                v-model="device.isOnline"
+                v-if="device.isOnline"
                 label="Online"
               ></v-checkbox>
               <v-checkbox
-                v-model="checkboxStatus.value"
+                v-model="device.isOnline"
                 v-else
                 label="Offline"
               ></v-checkbox>
             </div>
             <div class="form-group col-md-4 pull-right">
               <button class="btn btn-success" type="submit">
-                Create Device
+                Edit Device
               </button>
             </div>
           </form>
@@ -77,47 +71,50 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 import { server } from '../../helpers/helper';
+import axios from 'axios';
 import router from '../../router';
 import moment from 'moment';
 
 export default {
   data() {
     return {
-      vendor: '',
-      date: new Date().toISOString().substr(0, 10),
+      id: 0,
+      date: '',
       menupicker: {
         value: false,
       },
-      checkboxStatus: {
-        value: true,
-      },
-      snackbar: {
-        value: false,
-        text: '',
-      },
+      device: {},
     };
   },
+  created() {
+    this.id = this.$route.params.id;
+    this.getDevice();
+  },
   methods: {
-    createDevice() {
+    editDevice() {
       let deviceData = {
-        vendor: this.vendor,
+        vendor: this.device.vendor,
         createdDate: moment(this.date).toISOString(),
-        isOnline: this.checkboxStatus.value,
+        isOnline: this.device.isOnline,
       };
-      this.__submitToServer(deviceData);
-    },
-    __submitToServer(data) {
       axios
-        .post(`${server.baseURL}/device/create`, data)
+        .put(`${server.baseURL}/device/update?deviceID=${this.id}`, deviceData)
         .then(() => {
           router.push({ name: 'Devices' });
         })
-        .catch((err) => {
-          this.snackbar.value = true;
-          this.snackbar.text = err.response.data.message;
+        .catch((e) => {
+          console.log(e);
         });
+    },
+    getDevice() {
+      axios.get(`${server.baseURL}/device/${this.id}`).then((data) => {
+        this.device = data.data;
+        this.date = data.data.createdDate.substr(0, 10);
+      });
+    },
+    navigate() {
+      router.go(-1);
     },
   },
 };
